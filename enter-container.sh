@@ -5,6 +5,16 @@
 # @see http://jpetazzo.github.io/2014/03/23/lxc-attach-nsinit-nsenter-docker-0-9/
 # @see http://www.colliernotes.com/2014/03/how-to-enter-docker-container-without.html
 #
+# ----
+# NOTE for boot2docker user:
+#   1. use `boot2docker ssh` to login to the host OS.
+#   2. install `nsenter` on your own.  (Orz...)
+#   3. run this script.
+#
+#   @see https://github.com/boot2docker/boot2docker/issues/374
+# ----
+#
+
 
 readonly ARG_COUNT=$#
 readonly CONTAINER_NAME=$1
