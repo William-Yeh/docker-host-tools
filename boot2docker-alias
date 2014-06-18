@@ -1,8 +1,0 @@
-#
-# SUMMARY: convenient alias for boot2docker users.
-# INSTALL: add this to your ~/.bash_profile
-#
-# @see https://github.com/rvagg/dnt/issues/7#issuecomment-43081860
-#
-
-alias docker='docker -H "tcp://`boot2docker ip 2>&/dev/null`:2375" '
