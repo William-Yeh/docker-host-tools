@@ -1,0 +1,92 @@
+#!/usr/bin/env perl
+#
+# Simple Docker CLI wrapper:
+#   - let "docker pull" to pull public registry images
+#     from private registry.
+#   - let other "docker" commands to act as before.
+#
+# Environment variable:
+#   - PRIVATE_DOCKER_REGISTRY : host:port for our private registry.
+#
+#
+#  USAGE:
+#
+#    $ DOCKER pull williamyeh/wrk
+#
+#    $ PRIVATE_DOCKER_REGISTRY="my-registry.com" \
+#        DOCKER pull williamyeh/wrk
+#
+#
+#  @author William Yeh <william.pjyeh@gmail.com>
+#  @date   2015-01-12
+#
+#  @LICENSE - public domain.
+#
+
+use strict;
+use warnings;
+
+# constants
+my $PRIVATE_DOCKER_REGISTRY_NAME = "PRIVATE_DOCKER_REGISTRY";
+
+# variables
+my $Public_Image;
+my $Private_Image;
+
+
+
+if (should_bypass()) {
+    call_original_docker();
+}
+else {
+    handle_docker_pull();
+    call_original_docker();
+    convert_tag();
+    remove_private_tag();
+}
+
+
+sub should_bypass {
+    return (scalar @ARGV < 2)
+           || ($ARGV[0] ne "pull")
+           || ! defined $ENV{$PRIVATE_DOCKER_REGISTRY_NAME}
+           ;
+}
+
+
+sub call_original_docker {
+    my @cmd_line = ("docker");
+    push(@cmd_line, @ARGV);
+
+    exec_docker_cmd(@cmd_line);
+}
+
+
+sub handle_docker_pull {
+    $Public_Image = pop @ARGV;
+    $Private_Image = $ENV{$PRIVATE_DOCKER_REGISTRY_NAME}
+                   . "/" . $Public_Image;
+
+    push(@ARGV, $Private_Image);
+}
+
+
+sub convert_tag {
+    my @cmd = ("docker", "tag", "-f", $Private_Image, $Public_Image);
+    exec_docker_cmd(@cmd);
+}
+
+
+sub remove_private_tag {
+    my @cmd = ("docker", "rmi", "-f", $Private_Image);
+    exec_docker_cmd(@cmd);
+}
+
+
+sub exec_docker_cmd {
+    my @cmd = @_;
+    print "--> @cmd", "\n";
+
+    system(@cmd) == 0
+        || die "Failed: $?";
+}

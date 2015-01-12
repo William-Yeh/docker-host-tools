@@ -6,6 +6,10 @@ Some handy tools for managing Docker containers.
 
 ## Tools
 
+- `DOCKER` (all uppercase) -
+  Simple Docker CLI wrapper to "pull" public registry images from private registry.
+
+
 - `docker-clean-container` -
   Remove old stopped Docker containers, with optional '--dry-run' mode.
 
