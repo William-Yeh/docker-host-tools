@@ -6,11 +6,13 @@ Some handy tools for managing Docker containers.
 
 ## Tools
 
-- `clear-all-containers.sh` -
-  Remove old Docker containers.
+- `docker-clean-container` -
+  Remove old stopped Docker containers, with optional '--dry-run' mode.
 
-- `inspect-container-attr.sh` -
+
+- `docker-inspect-attr` -
   Inspect the attribute (e.g., IP address, pid) of a running Docker container.
+
 
 - `boot2docker-alias` -
   Convenient alias for [boot2docker](http://boot2docker.io/) users.

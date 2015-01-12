@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# remove old stopped Docker containers, with optional '--dry-run' mode.
+# @see http://stackoverflow.com/a/18141323/714426
+#
+
+CONTAINER_LIST=`docker ps --no-trunc -a -q -f status=exited`
+DRY_RUN=false
+
+
+if [ $# -gt 0 ]; then
+    if [ $1 = '--dryrun' ] || [ $1 = '--dry-run' ] || [ $1 = '-d' ]; then
+        DRY_RUN=true
+    fi
+fi
+
+
+if [ "$DRY_RUN" = true ]; then
+    echo $CONTAINER_LIST
+else
+    docker rm $CONTAINER_LIST
+fi
