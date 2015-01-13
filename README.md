@@ -9,10 +9,8 @@ Some handy tools for managing Docker containers.
 - `DOCKER` (all uppercase) -
   Simple Docker CLI wrapper to "pull" public registry images from private registry.
 
-
-- `docker-clean-container` -
+- `docker-rm-stopped` -
   Remove old stopped Docker containers, with optional '--dry-run' mode.
-
 
 - `docker-inspect-attr` -
   Inspect the attribute (e.g., IP address, pid) of a running Docker container.
