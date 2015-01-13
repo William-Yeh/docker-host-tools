@@ -1,0 +1,91 @@
+#!/usr/bin/env perl
+#
+# Docker image mirror tool:
+#   pull images from Docker Hub, and push them to private registry.
+#
+# Environment variable:
+#   - PRIVATE_DOCKER_REGISTRY: registry host:port to push images to.
+#
+#
+#  @author William Yeh <william.pjyeh@gmail.com>
+#  @date   2015-01-09
+#
+#  @LICENSE - public domain.
+#
+
+use strict;
+use warnings;
+
+
+# prefix of my private Docker registry
+die 'Environment variable missing: PRIVATE_DOCKER_REGISTRY'
+    unless defined $ENV{"PRIVATE_DOCKER_REGISTRY"};
+
+my $PRIVATE_REGISTRY_PREFIX = $ENV{"PRIVATE_DOCKER_REGISTRY"};
+
+
+foreach my $image (read_image_list()) {
+    pull_image($image);
+    push_to_private_registry($image);
+    remove_image($image);
+}
+
+
+sub read_image_list {
+    my @images = ();
+
+    my $image_list_file = (scalar @ARGV > 0)
+        ? $ARGV[0]   # first argv as file name
+        : "-"        # default: STDIN
+        ;
+
+    open(IN, $image_list_file) || die "Error reading file $image_list_file";
+    while (my $line = <IN>) {
+        chomp $line;
+        next if $line =~ /^\s*#/;
+        $line =~ s/^\s+|\s+$//g;    # trim spaces
+        push(@images, $line)  if length($line) > 0;
+    }
+    close IN;
+
+    #print @images;
+    return @images;
+}
+
+
+sub to_private_image_name {
+    my ($image) = @_;
+    return $PRIVATE_REGISTRY_PREFIX . "/" . $image;
+}
+
+
+sub add_tag {
+    my ($image) = @_;
+    my $new_image = to_private_image_name($image);
+
+    system("docker", "tag", $image, $new_image);
+    return $new_image;
+}
+
+sub pull_image {
+    my ($image) = @_;
+    system("docker", "pull", $image);
+}
+
+sub push_image {
+    my ($image) = @_;
+    system("docker", "push", $image);
+}
+
+sub push_to_private_registry {
+    my ($image) = @_;
+    my $new_image = add_tag($image);
+    print $new_image, "\n";
+    push_image($new_image);
+}
+
+sub remove_image {
+    my ($image) = @_;
+    system("docker", "rmi", "-f", $image);
+    system("docker", "rmi", "-f", to_private_image_name($image));
+}
