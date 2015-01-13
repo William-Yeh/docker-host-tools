@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# remove all Docker images belonging to specific repo name,
+# with optional '--dry-run' mode.
+#
+
+
+function usage {
+    cat <<USAGE
+Usage: docker-rmi-repo  [--dry-run]  <repo name>
+
+USAGE
+
+    exit 1
+}
+
+
+DRY_RUN=false
+
+if [ $# -gt 0 ]; then
+    if [ $1 = '--dryrun' ] || [ $1 = '--dry-run' ] || [ $1 = '-d' ]; then
+        DRY_RUN=true
+        shift
+    fi
+fi
+
+#echo $DRY_RUN
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+
+REGEX="/^"$1"\s+(?:[^\s]+)\s+([^\s]+)/";
+PERL_CMD='print $1," " if $_ =~ '$REGEX';';
+#echo $REGEX
+#echo $PERL_CMD
+CONTAINER_LIST=`docker images | perl -ne "$PERL_CMD"`
+
+
+if [ "$DRY_RUN" = true ]; then
+    echo $CONTAINER_LIST
+else
+    #echo $CONTAINER_LIST
+    docker rmi $CONTAINER_LIST
+fi

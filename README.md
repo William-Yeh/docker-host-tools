@@ -12,6 +12,9 @@ Some handy tools for managing Docker containers.
 - `docker-rm-stopped` -
   Remove old stopped Docker containers, with optional '--dry-run' mode.
 
+- `docker-rmi-repo` -
+  Remove all Docker images belonging to specific repo name, with optional '--dry-run' mode.
+
 - `docker-inspect-attr` -
   Inspect the attribute (e.g., IP address, pid) of a running Docker container.
 
