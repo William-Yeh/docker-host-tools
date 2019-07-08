@@ -41,5 +41,5 @@ if [ "$DRY_RUN" = true ]; then
     echo $CONTAINER_LIST
 else
     #echo $CONTAINER_LIST
-    docker rmi $CONTAINER_LIST
+    docker rmi -f $CONTAINER_LIST
 fi
